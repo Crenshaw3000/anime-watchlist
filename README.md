@@ -1,6 +1,6 @@
 # Anime Watchlist Mobile App<br />
 
-This Maven Coffee Sales Dashboard was created by using Flexdashboard in RStudio. The dataset is from Kaggle. 
+This mobile app allows users to create and manage a list of anime they are interested in watching in the future. The app can be shared with friends and family, enabling everyone to contribute to the list and suggest new anime to watch together. The app's database was built using Realtime Firebase to support real-time updates, and it was deployed using Netlify. Netlify enables developers to transform web apps into mobile-friendly progressive web applications (PWAs), enhancing the user experience across devices.
 
 
 ![Anime Watchlist App](images/animewatchlist.gif "Anime Watchlist App") <br />
@@ -48,7 +48,7 @@ Click Add and the app should now be on the phone and ready to use.
 
 
 
-### Android<br />
+#### Android<br />
 For Android copy URL into Google Chrome:
 ```
 https://anime-watchlist-sac.netlify.app
