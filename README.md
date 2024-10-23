@@ -3,7 +3,7 @@
 This Maven Coffee Sales Dashboard was created by using Flexdashboard in RStudio. The dataset is from Kaggle. 
 
 
-![Anime Watchlist App](images/anime_watchlist.gif "Anime Watchlist App") <br />
+![Anime Watchlist App](images/animewatchlist.gif "Anime Watchlist App") <br />
 
 ## <a name="technologies"></a> Technologies
 * JavaScript
@@ -15,25 +15,22 @@ This Maven Coffee Sales Dashboard was created by using Flexdashboard in RStudio.
 
 ## <a name="features"></a>Features
 
-### Dashboard Overview and Top Coffee Products<br />
-![Overview and Top Ten Products](Coffee_Overview.png "Overview and Top Ten Products") <br/>
+### Anime Watchlist App Icon on an iPhone<br />
+![Icon on an iPhone](images/app_phone_homescreen.PNG "Icon on an iPhone") <br/>
 
 
-### Dashboard Overview and Top Products by Category <br />
-![Overview and Top Products by Category](Coffee_Category.png "Overview and Top Products by Category") <br />
-
-### Sales by Store Location and Sales Overtime <br />
-![Sales by Store Location and Sales Overtime](Coffee_Pie_Line.png "Sales by Store Location and Sales Overtime") <br/>
+### Anime Watchlist App Opened on a iPhone <br />
+![App Opened on a iPhone](anime_app.PNG "App Opened on a iPhone") <br />
 
 
-### Product Price <br />
-![Product Price](Coffee_Product_Price.png "Product Price") <br />
+### Realtime Firebase Database <br />
+![Firebase Database](Firebase.png "Firebase Database") <br />
 
 
 ## <a name="installation"></a>Installation
 To run download app on you mobile phone:
 
-###iPhone
+#### iPhone<br />
 For iphone copy URL into Safari:
 ```
 https://anime-watchlist-sac.netlify.app
@@ -47,7 +44,22 @@ Set display name:
 Anime Watchlist
 ```
 
-Click Add and the app should now be on the iphone and ready to use. 
+Click Add and the app should now be on the phone and ready to use. 
 
-###Android
-For Android copy URL into Safari:
+
+
+### Android<br />
+For Android copy URL into Google Chrome:
+```
+https://anime-watchlist-sac.netlify.app
+```
+
+Click on the three vertical dots int he upper right corner.
+Next, click Add to Home Screen near bottom of page. 
+
+Keep the below display name:
+```
+Anime Watchlist
+```
+
+Click Add and the app should now be on the phone and ready to use. 

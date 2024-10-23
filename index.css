@@ -2,7 +2,8 @@ html, body {
     margin: 0;
     padding: 0;
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-    background-color: white;
+    background-color: black;
+    user-select: none;
 }
 
 .container {
@@ -38,4 +39,36 @@ button {
     font-size: 20px;
     text-align: center;
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+button:hover {
+background-color: rgb(98, 84, 84);
+cursor: pointer;
+
+}
+
+ui {
+    list-style-type: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+
+}
+
+ul li{
+    font-size: 20px;
+    background-color: aliceblue;
+    padding: 15px;
+    border-radius: 8px;
+    flex-grow: 1;
+    text-align: center;
+    box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.2);
+
+}
+
+ul li:hover {
+background-color: rgb(138, 117, 158);
+cursor: pointer;
+
 }

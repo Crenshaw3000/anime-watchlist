@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref, push, onValue } from "firebase/database";
+import { getDatabase, ref, push, onValue,remove } from "firebase/database";
 
 const appSettings = {
     databaseURL: "https://anime-watchlist-ca002-default-rtdb.firebaseio.com/",
@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     addButton.addEventListener("click", function () {
         let inputValue = inputFieldEl.value.trim(); // Trim to remove whitespace
-
+        
         if (inputValue === "") {
             console.warn("Input is empty. Please enter a value.");
             return;
@@ -46,9 +46,25 @@ document.addEventListener("DOMContentLoaded", function () {
             const data = snapshot.val();
 
             // Iterate over the list of anime and add each item to the HTML
-            Object.entries(data).forEach(([_, value]) => {
+            Object.entries(data).forEach(([key, value]) => {
                 const listItem = document.createElement("li");
                 listItem.textContent = value;
+                listItem.setAttribute("data-key", key); // Store the unique key (Firebase ID) as a data-key attribute on the <li> element
+                
+                // Add click event to remove the item when clicked
+                listItem.addEventListener("click", () => {
+                    const itemKey = listItem.getAttribute("data-key");
+                    const itemRef = ref(database, `animeList/${itemKey}`);
+                    remove(itemRef)
+                        .then(() => {
+                            console.log(`Item with key: ${itemKey} removed successfully`);
+                        })
+                        .catch((error) => {
+                            console.error("Error removing item:", error);
+                        });
+                });
+
+
                 animeListEl.appendChild(listItem);
             });
         } else {
