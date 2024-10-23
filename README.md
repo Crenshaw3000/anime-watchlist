@@ -20,11 +20,11 @@ This Maven Coffee Sales Dashboard was created by using Flexdashboard in RStudio.
 
 
 ### Anime Watchlist App Opened on a iPhone <br />
-![App Opened on a iPhone](anime_app.PNG "App Opened on a iPhone") <br />
+![App Opened on a iPhone](images/anime_app.PNG "App Opened on a iPhone") <br />
 
 
 ### Realtime Firebase Database <br />
-![Firebase Database](Firebase.png "Firebase Database") <br />
+![Firebase Database](images/Firebase.png "Firebase Database") <br />
 
 
 ## <a name="installation"></a>Installation
