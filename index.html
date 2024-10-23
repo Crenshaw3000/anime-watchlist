@@ -7,10 +7,67 @@
     <body>
         <div class="container">
             <img src="images/killua.jpeg">
-            <input type="text" id="input-field" placeholder="Black Clover">
-            <button id="add-button">Add to List</button>
-        </div>    
-        <script src="index.js"></script>
+            <input type="text" id="input-field" placeholder="Anime Name">
+            <button id="addButton">Add to List</button>
+            <ul id="watchList">
+                <li>Black Clover</li>
+                <li>Fruit Baskets</li>
+            </ul> 
+        </div>   
 
-    </body>
+        <script type="module">
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
+             import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js";
+
+            const appSettings = {
+                databaseURL: "https://anime-watchlist-ca002-default-rtdb.firebaseio.com/",
+            };
+
+            const app = initializeApp(appSettings);
+            const database = getDatabase(app);
+            const animeListInDB = ref(database, "animeList");
+
+            document.addEventListener("DOMContentLoaded", function () {
+                const addButton = document.getElementById("addButton");
+                const inputFieldEl = document.getElementById("input-field");
+                const animeListEl = document.getElementById("watchList");
+
+                if (!addButton || !inputFieldEl || !animeListEl) {
+                    console.error("Required HTML elements not found!");
+                    return;
+                }
+
+                addButton.addEventListener("click", function () {
+                    let inputValue = inputFieldEl.value.trim();
+                    if (inputValue === "") {
+                        console.warn("Input is empty. Please enter a value.");
+                        return;
+                    }
+
+                    push(animeListInDB, inputValue)
+                        .then(() => {
+                            console.log("Successfully added: " + inputValue);
+                            inputFieldEl.value = ""; // Clear the input field
+                        })
+                        .catch((error) => {
+                            console.error("Error adding to database:", error);
+                        });
+                });
+
+                onValue(animeListInDB, (snapshot) => {
+                    animeListEl.innerHTML = ""; // Clear the list first
+
+                    if (snapshot.exists()) {
+                        const data = snapshot.val();
+                        Object.entries(data).forEach(([_, value]) => {
+                            const listItem = document.createElement("li");
+                            listItem.textContent = value; // Set the text content to the value
+                            animeListEl.appendChild(listItem); // Append to the list
+                        });
+                    } else {
+                        console.log("No data available");
+                    }
+                });
+            });
+        </script>
 </html>
