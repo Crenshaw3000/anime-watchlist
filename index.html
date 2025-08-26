@@ -52,16 +52,12 @@
                 const inputValue = inputFieldEl.value.trim();
                 if (!inputValue) return;
 
-                // Clear the input immediately
-                inputFieldEl.value = "";
-
+                inputFieldEl.value = ""; // Clear immediately
                 addButton.disabled = true;
                 addButton.textContent = "Adding...";
 
                 push(animeListInDB, inputValue)
-                    .then(() => {
-                        console.log("Successfully added:", inputValue);
-                    })
+                    .then(() => console.log("Successfully added:", inputValue))
                     .catch((error) => console.error("Error adding:", error))
                     .finally(() => {
                         addButton.disabled = false;
@@ -69,13 +65,18 @@
                     });
             }
 
-
             function removeItem(key, listItem) {
                 const itemRef = ref(database, `animeList/${key}`);
                 remove(itemRef)
                     .then(() => listItem.remove())
                     .catch((error) => console.error("Error removing item:", error));
             }
+
+            // Attach event listeners to button and Enter key
+            addButton.addEventListener("click", addAnime);
+            inputFieldEl.addEventListener("keypress", (event) => {
+                if (event.key === "Enter") addAnime();
+            });
 
             // Real-time listeners for added/removed items
             onChildAdded(animeListInDB, (snapshot) => {
