@@ -1,6 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref, push, onValue,remove } from "firebase/database";
-
+import { getDatabase, ref, push, onChildAdded, onChildRemoved, remove } from "firebase/database";
 
 const appSettings = {
     databaseURL: "https://anime-watchlist-ca002-default-rtdb.firebaseio.com/",
@@ -20,56 +19,55 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
     }
 
-    addButton.addEventListener("click", function () {
-        let inputValue = inputFieldEl.value.trim(); // Trim to remove whitespace
-        
-        if (inputValue === "") {
-            console.warn("Input is empty. Please enter a value.");
-            return;
-        }
+    function addAnime() {
+        let inputValue = inputFieldEl.value.trim();
+        if (!inputValue) return;
+
+        addButton.disabled = true;
+        addButton.textContent = "Adding...";
 
         push(animeListInDB, inputValue)
-            .then(() => {
-                console.log("Successfully added: " + inputValue);
-                inputFieldEl.value = ""; // Clear the input field
+            .then((newItemRef) => {
+                inputFieldEl.value = "";
             })
-            .catch((error) => {
-                console.error("Error adding to database:", error);
+            .catch((error) => console.error("Error adding:", error))
+            .finally(() => {
+                addButton.disabled = false;
+                addButton.textContent = "Add to List";
             });
-        });
+    }
 
-    // Listen for changes in the database and update the list
-    onValue(animeListInDB, (snapshot) => {
-        // Clear the list to avoid duplication
-        animeListEl.innerHTML = "";
+    addButton.addEventListener("click", addAnime);
+    inputFieldEl.addEventListener("keypress", (event) => {
+        if (event.key === "Enter") addAnime();
+    });
 
-        if (snapshot.exists()) {
-            const data = snapshot.val();
+    function removeItem(key, listItem) {
+        const itemRef = ref(database, `animeList/${key}`);
+        remove(itemRef)
+            .then(() => listItem.remove())
+            .catch((error) => console.error("Error removing item:", error));
+    }
 
-            // Iterate over the list of anime and add each item to the HTML
-            Object.entries(data).forEach(([key, value]) => {
-                const listItem = document.createElement("li");
-                listItem.textContent = value;
-                listItem.setAttribute("data-key", key); // Store the unique key (Firebase ID) as a data-key attribute on the <li> element
-                
-                // Add click event to remove the item when clicked
-                listItem.addEventListener("click", () => {
-                    const itemKey = listItem.getAttribute("data-key");
-                    const itemRef = ref(database, `animeList/${itemKey}`);
-                    remove(itemRef)
-                        .then(() => {
-                            console.log(`Item with key: ${itemKey} removed successfully`);
-                        })
-                        .catch((error) => {
-                            console.error("Error removing item:", error);
-                        });
-                });
+    // Listen for newly added items
+    onChildAdded(animeListInDB, (snapshot) => {
+        const key = snapshot.key;
+        const value = snapshot.val();
 
+        const listItem = document.createElement("li");
+        listItem.textContent = value;
+        listItem.setAttribute("data-key", key);
+        listItem.title = "Click to remove";
 
-                animeListEl.appendChild(listItem);
-            });
-        } else {
-            console.log("No data available");
-        }
+        listItem.addEventListener("click", () => removeItem(key, listItem));
+
+        animeListEl.appendChild(listItem);
+    });
+
+    // Listen for removed items
+    onChildRemoved(animeListInDB, (snapshot) => {
+        const removedKey = snapshot.key;
+        const item = animeListEl.querySelector(`[data-key="${removedKey}"]`);
+        if (item) item.remove();
     });
 });
