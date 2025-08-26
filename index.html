@@ -52,18 +52,23 @@
                 const inputValue = inputFieldEl.value.trim();
                 if (!inputValue) return;
 
-                inputFieldEl.value = ""; // Clear immediately
                 addButton.disabled = true;
                 addButton.textContent = "Adding...";
 
                 push(animeListInDB, inputValue)
-                    .then(() => console.log("Successfully added:", inputValue))
-                    .catch((error) => console.error("Error adding:", error))
-                    .finally(() => {
+                    .then(() => {
+                        console.log("Successfully added:", inputValue);
+                        inputFieldEl.value = "";        // Clear input here
+                        addButton.disabled = false;     // Re-enable button
+                        addButton.textContent = "Add to List";  // Restore text
+                    })
+                    .catch((error) => {
+                        console.error("Error adding:", error);
                         addButton.disabled = false;
                         addButton.textContent = "Add to List";
                     });
             }
+
 
             function removeItem(key, listItem) {
                 const itemRef = ref(database, `animeList/${key}`);
