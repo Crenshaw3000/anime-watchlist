@@ -20,28 +20,25 @@
 </head>
 <body>
     <div class="container">
-        <img src="images/killua.jpeg">
+        <img src="images/killua.jpeg" alt="Anime">
         <input type="text" id="input-field" placeholder="Anime Name" maxlength="100">
         <button id="addButton">Add to List</button>
         <ul id="anime-list"></ul> 
     </div>   
 
     <script type="module">
-        // STEP 1: Import Firebase modules from CDN
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
-        import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js";
+        import { getDatabase, ref, push, onChildAdded, onChildRemoved, remove } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js";
 
-        // STEP 2: Firebase configuration
         const appSettings = {
             databaseURL: "https://anime-watchlist-ca002-default-rtdb.firebaseio.com/",
         };
 
-        // STEP 3: Initialize Firebase
         const app = initializeApp(appSettings);
         const database = getDatabase(app);
         const animeListInDB = ref(database, "animeList");
 
-        document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("DOMContentLoaded", () => {
             const addButton = document.getElementById("addButton");
             const inputFieldEl = document.getElementById("input-field");
             const animeListEl = document.getElementById("anime-list");
@@ -51,70 +48,52 @@
                 return;
             }
 
-            // Function to add anime
             function addAnime() {
                 const inputValue = inputFieldEl.value.trim();
-                if (inputValue === "") return;
+                if (!inputValue) return;
 
                 addButton.disabled = true;
                 addButton.textContent = "Adding...";
 
                 push(animeListInDB, inputValue)
-                    .then((newItemRef) => {
-                        const listItem = document.createElement("li");
-                        listItem.textContent = inputValue;
-                        listItem.setAttribute("data-key", newItemRef.key);
-                        listItem.title = "Click to remove from watchlist";
-                        listItem.addEventListener("click", () => removeItem(newItemRef.key, listItem));
-                        animeListEl.appendChild(listItem);
-                        inputFieldEl.value = "";
-                    })
-                    .catch((error) => {
-                        console.error("Error adding to database:", error);
-                        alert("Failed to add anime. Please try again.");
-                    })
+                    .then(() => { inputFieldEl.value = ""; })
+                    .catch((error) => console.error("Error adding:", error))
                     .finally(() => {
                         addButton.disabled = false;
                         addButton.textContent = "Add to List";
                     });
             }
 
-            // Function to remove anime
-            function removeItem(key, listItem) {
-                const itemRef = ref(database, `animeList/${key}`);
-                remove(itemRef)
-                    .then(() => {
-                        listItem.remove();
-                        console.log(`Anime with key "${key}" removed successfully`);
-                    })
-                    .catch((error) => console.error("Error removing anime:", error));
-            }
-
-            // Event listeners for adding anime
             addButton.addEventListener("click", addAnime);
             inputFieldEl.addEventListener("keypress", (event) => {
                 if (event.key === "Enter") addAnime();
             });
 
-            // Real-time listener for database changes
-            onValue(animeListInDB, (snapshot) => {
-                animeListEl.innerHTML = "";
+            function removeItem(key, listItem) {
+                const itemRef = ref(database, `animeList/${key}`);
+                remove(itemRef)
+                    .then(() => listItem.remove())
+                    .catch((error) => console.error("Error removing item:", error));
+            }
 
-                if (snapshot.exists()) {
-                    const data = snapshot.val();
-                    Object.entries(data).forEach(([key, value]) => {
-                        const listItem = document.createElement("li");
-                        listItem.textContent = value;
-                        listItem.setAttribute("data-key", key);
-                        listItem.title = "Click to remove from watchlist";
-                        listItem.addEventListener("click", () => removeItem(key, listItem));
-                        animeListEl.appendChild(listItem);
-                    });
-                } else {
-                    animeListEl.innerHTML = '<li>No anime in your watchlist yet</li>';
-                }
-            }, (error) => {
-                console.error("Database read failed:", error);
+            // Real-time listeners for added/removed items
+            onChildAdded(animeListInDB, (snapshot) => {
+                const key = snapshot.key;
+                const value = snapshot.val();
+
+                const listItem = document.createElement("li");
+                listItem.textContent = value;
+                listItem.setAttribute("data-key", key);
+                listItem.title = "Click to remove";
+
+                listItem.addEventListener("click", () => removeItem(key, listItem));
+                animeListEl.appendChild(listItem);
+            });
+
+            onChildRemoved(animeListInDB, (snapshot) => {
+                const removedKey = snapshot.key;
+                const item = animeListEl.querySelector(`[data-key="${removedKey}"]`);
+                if (item) item.remove();
             });
         });
     </script>
