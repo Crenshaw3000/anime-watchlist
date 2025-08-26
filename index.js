@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref, push, onValue,remove } from "firebase/database";
 
+
 const appSettings = {
     databaseURL: "https://anime-watchlist-ca002-default-rtdb.firebaseio.com/",
 };
