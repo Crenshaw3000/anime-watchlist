@@ -8,12 +8,8 @@
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
         <link rel="manifest" href="/site.webmanifest">
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-        <link rel="manifest" href="/site.webmanifest">
-                <style>
-            #watchList {
+        <style>
+            #anime-list {
                 list-style-type: none;
                 padding: 0;
                 display: flex;
@@ -25,86 +21,152 @@
     <body>
         <div class="container">
             <img src="images/killua.jpeg">
-            <input type="text" id="input-field" placeholder="Anime Name">
+            <input type="text" id="input-field" placeholder="Anime Name" maxlength="100">
             <button id="addButton">Add to List</button>
-            <ul id="watchList">
-                <li>Black Clover</li>
-                <li>Fruit Baskets</li>
-            </ul> 
+            <ul id="anime-list"></ul> 
         </div>   
 
         <script type="module">
+            // STEP 1: Import Firebase modules from CDN
+            // These imports give us access to Firebase's core functionality
             import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
-             import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js";
+            import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js";
 
+            // STEP 2: Configure Firebase connection settings
+            // This object contains the URL to our specific Firebase Realtime Database
             const appSettings = {
                 databaseURL: "https://anime-watchlist-ca002-default-rtdb.firebaseio.com/",
             };
 
+            // STEP 3: Initialize Firebase app and database connection
+            // initializeApp creates a connection to Firebase using our settings
             const app = initializeApp(appSettings);
+            // getDatabase gets a reference to the Realtime Database
             const database = getDatabase(app);
+            // ref creates a reference to a specific location in the database ("animeList" node)
             const animeListInDB = ref(database, "animeList");
 
+            // STEP 4: Wait for DOM to load before running our code
+            // This ensures all HTML elements are available before JavaScript tries to access them
             document.addEventListener("DOMContentLoaded", function () {
-                const addButton = document.getElementById("addButton");
-                const inputFieldEl = document.getElementById("input-field");
-                const animeListEl = document.getElementById("watchList");
+                
+                // STEP 5: Get references to HTML elements we need to interact with
+                const addButton = document.getElementById("addButton");        // The "Add to List" button
+                const inputFieldEl = document.getElementById("input-field");   // The text input field
+                const animeListEl = document.getElementById("anime-list");     // The <ul> that will hold our anime list
 
+                // STEP 6: Check if all required HTML elements exist
+                // If any element is missing, log an error and stop execution
                 if (!addButton || !inputFieldEl || !animeListEl) {
                     console.error("Required HTML elements not found!");
                     return;
                 }
 
-                addButton.addEventListener("click", function () {
+                // STEP 7: Define function to add anime to the database
+                function addAnime() {
+                    // Get the input value and remove any extra whitespace
                     let inputValue = inputFieldEl.value.trim();
+                    
+                    // STEP 8: Validate input - don't add empty values
                     if (inputValue === "") {
                         console.warn("Input is empty. Please enter a value.");
                         return;
                     }
 
+                    // STEP 9: Provide user feedback during the add operation
+                    // Disable button and change text to show something is happening
+                    addButton.disabled = true;
+                    addButton.textContent = "Adding...";
+
+                    // STEP 10: Add the anime to Firebase database
+                    // push() automatically generates a unique key and adds the value
                     push(animeListInDB, inputValue)
                         .then(() => {
+                            // SUCCESS: Log success message and clear the input field
                             console.log("Successfully added: " + inputValue);
-                            inputFieldEl.value = ""; // Clear the input field
+                            inputFieldEl.value = ""; // Clear the input field after successful add
                         })
                         .catch((error) => {
+                            // ERROR: Log error and show user-friendly message
                             console.error("Error adding to database:", error);
+                            alert("Failed to add anime. Please try again.");
+                        })
+                        .finally(() => {
+                            // CLEANUP: Re-enable button and restore original text (runs regardless of success/failure)
+                            addButton.disabled = false;
+                            addButton.textContent = "Add to List";
                         });
+                }
+
+                // STEP 11: Set up event listeners for user interactions
+                // Listen for button clicks to add anime
+                addButton.addEventListener("click", addAnime);
+                
+                // Listen for Enter key press in input field to add anime
+                inputFieldEl.addEventListener("keypress", function(event) {
+                    if (event.key === "Enter") {
+                        addAnime(); // Call the same function when Enter is pressed
+                    }
                 });
 
+                // STEP 12: Set up real-time listener for database changes
+                // onValue listens for any changes to the animeListInDB reference
+                // This function runs whenever data is added, removed, or modified
                 onValue(animeListInDB, (snapshot) => {
-                    animeListEl.innerHTML = ""; // Clear the list first
+                    // STEP 13: Clear the current list to avoid duplicates
+                    animeListEl.innerHTML = "";
 
+                    // STEP 14: Check if there's any data in the database
                     if (snapshot.exists()) {
-                    const data = snapshot.val();
+                        // Get all the data from the snapshot
+                        const data = snapshot.val();
 
-                    // Iterate over the list of anime and add each item to the HTML
-                    Object.entries(data).forEach(([key, value]) => {
-                    const listItem = document.createElement("li");
-                    listItem.textContent = value;
-                    listItem.setAttribute("data-key", key); // Store the unique key (Firebase ID) as a data-key attribute on the <li> element
-                    
-                    // Add click event to remove the item when clicked
-                    listItem.addEventListener("click", () => {
-                        const itemKey = listItem.getAttribute("data-key");
-                        const itemRef = ref(database, `animeList/${itemKey}`);
-                        remove(itemRef)
-                            .then(() => {
-                                console.log(`Item with key: ${itemKey} removed successfully`);
-                            })
-                            .catch((error) => {
-                                console.error("Error removing item:", error);
+                        // STEP 15: Iterate through each anime entry in the database
+                        // Object.entries() converts the Firebase object into [key, value] pairs
+                        Object.entries(data).forEach(([key, value]) => {
+                            // STEP 16: Create a new list item for each anime
+                            const listItem = document.createElement("li");
+                            listItem.textContent = value; // Set the anime name as the text content
+                            
+                            // STEP 17: Store the Firebase key as a data attribute
+                            // This unique key allows us to identify and delete the specific item later
+                            listItem.setAttribute("data-key", key);
+                            listItem.title = "Click to remove from watchlist"; // Tooltip for user guidance
+                            
+                            // STEP 18: Add click event listener for removal functionality
+                            listItem.addEventListener("click", () => {
+                                // Get the unique Firebase key from the clicked element
+                                const itemKey = listItem.getAttribute("data-key");
+                                // Create a reference to the specific item in the database
+                                const itemRef = ref(database, `animeList/${itemKey}`);
+                                
+                                // STEP 19: Remove the item from Firebase database
+                                remove(itemRef)
+                                    .then(() => {
+                                        // SUCCESS: Log successful removal
+                                        console.log(`Item with key: ${itemKey} removed successfully`);
+                                    })
+                                    .catch((error) => {
+                                        // ERROR: Log error if removal fails
+                                        console.error("Error removing item:", error);
+                                    });
                             });
-                    });
 
-
-                    animeListEl.appendChild(listItem);
-                 });
-
-            } else {
-                console.log("No data available");
-            }
+                            // STEP 20: Add the completed list item to the HTML list
+                            animeListEl.appendChild(listItem);
+                        });
+                    } else {
+                        // STEP 21: Handle empty database state
+                        // Show a message when there are no anime in the list
+                        console.log("No data available");
+                        animeListEl.innerHTML = '<li>No anime in your watchlist yet</li>';
+                    }
+                }, (error) => {
+                    // STEP 22: Handle database read errors
+                    // This error handler runs if there's a problem reading from the database
+                    console.error("Database read failed:", error);
                 });
             });
         </script>
+    </body>
 </html>
