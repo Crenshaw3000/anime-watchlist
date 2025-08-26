@@ -3,3 +3,5 @@ firebase-admin
 pandas
 numpy
 pillow
+requests  # if you make HTTP requests
+altair    # if you use charts beyond st.line_chart, st.bar_chart
