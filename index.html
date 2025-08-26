@@ -52,11 +52,16 @@
                 const inputValue = inputFieldEl.value.trim();
                 if (!inputValue) return;
 
+                // Clear the input immediately
+                inputFieldEl.value = "";
+
                 addButton.disabled = true;
                 addButton.textContent = "Adding...";
 
                 push(animeListInDB, inputValue)
-                    .then(() => { inputFieldEl.value = ""; })
+                    .then(() => {
+                        console.log("Successfully added:", inputValue);
+                    })
                     .catch((error) => console.error("Error adding:", error))
                     .finally(() => {
                         addButton.disabled = false;
@@ -64,10 +69,6 @@
                     });
             }
 
-            addButton.addEventListener("click", addAnime);
-            inputFieldEl.addEventListener("keypress", (event) => {
-                if (event.key === "Enter") addAnime();
-            });
 
             function removeItem(key, listItem) {
                 const itemRef = ref(database, `animeList/${key}`);
