@@ -24,7 +24,7 @@ The Anime Watchlist app connects to Firebase using `initializeApp` and creates a
 ## Key Features
 
 - Built entirely with **native JavaScript** (no frameworks).
-- Uses modern **ES6 module syntax** to import Firebase directly from Google’s CDN.
+- Uses modern **ES6 module syntax** to import Firebase directly from Google’s Content Delivery Network (CDN) instead of downloading the Firebase files locally or using a package manager.
 - Handles user interactions via `addEventListener` and DOM manipulation (`createElement`, `appendChild`, etc.).
 - Input validation ensures **empty titles cannot be added**.
 - Promise-based error handling (`.then()` / `.catch()`) for Firebase operations.
@@ -37,17 +37,10 @@ The Anime Watchlist app connects to Firebase using `initializeApp` and creates a
 
 ## Difficulties
 
-When updating the code, the original approach used **`onValue`** to listen for changes to the entire list.  
-
-- This caused issues where the **“Add” button could get stuck in the “Adding…” state**.  
-- Input fields were **not clearing consistently** after adding a title.  
-
-Switching to **`onChildAdded`** and **`onChildRemoved`** solved these problems because these listeners handle **individual child nodes** instead of the entire list.  
-
-- Updates became more **granular, faster, and less prone to UI glitches**.
+When updating the code, the original approach used onValue to listen for changes to the entire list. However, this caused issues where the “Add” button could get stuck in the “Adding…” state, and input fields were not clearing consistently. Switching to onChildAdded and onChildRemoved solved these problems because these listeners handle individual child nodes instead of the entire list, making updates more granular, faster, and less prone to UI glitches.
 
 
-
+<br/>
 ### Anime Watchlist App Icon on an iPhone<br />
 ![Icon on an iPhone](images/app_phone_homescreen.PNG "Icon on an iPhone") <br/>
 
