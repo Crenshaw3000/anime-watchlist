@@ -13,23 +13,43 @@ This mobile app allows users to create and manage a list of anime they are inter
 * Netlify
 
 
-## How it works </a> How it works
-* The app connects to Firebase using `initializeApp` and creates references to the `"animeList"` node, which stores all anime entries.
-* Users can add anime titles, which are saved with unique keys using Firebase’s `push` method.
-* The UI updates automatically whenever data is added, changed, or removed, thanks to Firebase’s `onValue` listener.
-* Anime entries can be deleted precisely using the `remove` method, combined with `data-key` attributes on DOM elements.
+---
+title: "Anime Watchlist"
+output: html_document
+---
 
-## Key Features
-* Built entirely with native JavaScript (no frameworks).
-* Uses modern JavaScript module syntax (ES6 modules) to import Firebase directly from Google’s Content Delivery Network (CDN) instead of downloading the Firebase files locally or using a package manager.
-* Handles user interactions with `addEventListener` and DOM manipulation (`createElement`, `appendChild`, etc.).
-* Input validation ensures users cannot add empty titles.
-* Promise-based error handling (`.then()` / `.catch()`) for Firebase operations.
-* Fully real-time: changes are instantly reflected across all connected devices.
+# How It Works
 
-## Code Organization
-* Firebase configuration, DOM selection, event handlers, and database functions are kept in separate blocks for clarity.
-* Initialization runs on `DOMContentLoaded` to ensure elements are ready before scripts execute.
+The Anime Watchlist app connects to Firebase using `initializeApp` and creates a reference to the `"animeList"` node, which stores all anime entries.
+
+- Users can add anime titles, which are saved with **unique keys** using Firebase’s `push` method.
+- The UI updates automatically whenever data is added or removed, thanks to Firebase’s **`onChildAdded`** and **`onChildRemoved`** listeners.
+- Anime entries can be deleted precisely using the `remove` method, combined with `data-key` attributes on DOM elements.
+
+# Key Features
+
+- Built entirely with **native JavaScript** (no frameworks).
+- Uses modern **ES6 module syntax** to import Firebase directly from Google’s CDN.
+- Handles user interactions via `addEventListener` and DOM manipulation (`createElement`, `appendChild`, etc.).
+- Input validation ensures **empty titles cannot be added**.
+- Promise-based error handling (`.then()` / `.catch()`) for Firebase operations.
+- Fully **real-time**: changes are instantly reflected across all connected devices.
+
+# Code Organization
+
+- Firebase configuration, DOM selection, event handlers, and database functions are kept in **separate blocks** for clarity.
+- Initialization runs on `DOMContentLoaded` to ensure all elements are ready before scripts execute.
+
+# Difficulties
+
+When updating the code, the original approach used **`onValue`** to listen for changes to the entire list.  
+
+- This caused issues where the **“Add” button could get stuck in the “Adding…” state**.  
+- Input fields were **not clearing consistently** after adding a title.  
+
+Switching to **`onChildAdded`** and **`onChildRemoved`** solved these problems because these listeners handle **individual child nodes** instead of the entire list.  
+
+- Updates became more **granular, faster, and less prone to UI glitches**.
 
 
 
