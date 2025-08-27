@@ -13,12 +13,7 @@ This mobile app allows users to create and manage a list of anime they are inter
 * Netlify
 
 
----
-title: "Anime Watchlist"
-output: html_document
----
-
-# How It Works
+## How It Works
 
 The Anime Watchlist app connects to Firebase using `initializeApp` and creates a reference to the `"animeList"` node, which stores all anime entries.
 
@@ -26,7 +21,7 @@ The Anime Watchlist app connects to Firebase using `initializeApp` and creates a
 - The UI updates automatically whenever data is added or removed, thanks to Firebase’s **`onChildAdded`** and **`onChildRemoved`** listeners.
 - Anime entries can be deleted precisely using the `remove` method, combined with `data-key` attributes on DOM elements.
 
-# Key Features
+## Key Features
 
 - Built entirely with **native JavaScript** (no frameworks).
 - Uses modern **ES6 module syntax** to import Firebase directly from Google’s CDN.
@@ -35,12 +30,12 @@ The Anime Watchlist app connects to Firebase using `initializeApp` and creates a
 - Promise-based error handling (`.then()` / `.catch()`) for Firebase operations.
 - Fully **real-time**: changes are instantly reflected across all connected devices.
 
-# Code Organization
+## Code Organization
 
 - Firebase configuration, DOM selection, event handlers, and database functions are kept in **separate blocks** for clarity.
 - Initialization runs on `DOMContentLoaded` to ensure all elements are ready before scripts execute.
 
-# Difficulties
+## Difficulties
 
 When updating the code, the original approach used **`onValue`** to listen for changes to the entire list.  
 
