@@ -37,10 +37,10 @@ The Anime Watchlist app connects to Firebase using `initializeApp` and creates a
 
 ## Difficulties
 
-When updating the code, the original approach used onValue to listen for changes to the entire list. However, this caused issues where the “Add” button could get stuck in the “Adding…” state, and input fields were not clearing consistently. Switching to onChildAdded and onChildRemoved solved these problems because these listeners handle individual child nodes instead of the entire list, making updates more granular, faster, and less prone to UI glitches.
+When updating the code, the original approach used `onValue` to listen for changes to the entire list. However, this caused issues where the “Add” button could get stuck in the “Adding…” state, and input fields were not clearing consistently. Switching to `onChildAdded` and o`nChildRemoved` solved these problems because these listeners handle individual child nodes instead of the entire list, making updates more granular, faster, and less prone to UI glitches.
 
 
-<br/>
+
 ### Anime Watchlist App Icon on an iPhone<br />
 ![Icon on an iPhone](images/app_phone_homescreen.PNG "Icon on an iPhone") <br/>
 
